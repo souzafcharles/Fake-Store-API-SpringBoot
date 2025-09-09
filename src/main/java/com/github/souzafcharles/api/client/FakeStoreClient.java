@@ -1,7 +1,6 @@
 package com.github.souzafcharles.api.client;
 
-import com.github.souzafcharles.api.model.dto.ProductResponseDTO;
-import com.github.souzafcharles.api.model.dto.CartResponseDTO; // criar DTO para Cart
+import com.github.souzafcharles.api.Product.model.dto.ProductResponseDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -27,12 +26,5 @@ public class FakeStoreClient {
                 .uri("https://fakestoreapi.com/products/{id}", id)
                 .retrieve()
                 .bodyToMono(ProductResponseDTO.class);
-    }
-
-    public Mono<CartResponseDTO[]> getAllCarts() {
-        return webClient.get()
-                .uri("https://fakestoreapi.com/carts")
-                .retrieve()
-                .bodyToMono(CartResponseDTO[].class);
     }
 }

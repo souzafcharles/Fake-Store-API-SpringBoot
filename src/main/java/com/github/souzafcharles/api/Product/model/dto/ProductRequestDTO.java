@@ -1,4 +1,4 @@
-package com.github.souzafcharles.api.model.dto;
+package com.github.souzafcharles.api.Product.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

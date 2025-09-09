@@ -1,9 +1,9 @@
-package com.github.souzafcharles.api.initializer;
+package com.github.souzafcharles.api.Product.initializer;
 
 import com.github.souzafcharles.api.client.FakeStoreClient;
-import com.github.souzafcharles.api.model.dto.ProductResponseDTO;
-import com.github.souzafcharles.api.model.entity.Product;
-import com.github.souzafcharles.api.repository.ProductRepository;
+import com.github.souzafcharles.api.Product.model.dto.ProductResponseDTO;
+import com.github.souzafcharles.api.Product.model.entity.Product;
+import com.github.souzafcharles.api.Product.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 

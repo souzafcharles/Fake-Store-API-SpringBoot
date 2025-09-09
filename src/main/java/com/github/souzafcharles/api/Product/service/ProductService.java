@@ -1,14 +1,16 @@
-package com.github.souzafcharles.api.service;
+package com.github.souzafcharles.api.Product.service;
 
 import com.github.souzafcharles.api.client.FakeStoreClient;
-import com.github.souzafcharles.api.model.dto.CartProductDTO;
-import com.github.souzafcharles.api.model.dto.ProductRequestDTO;
-import com.github.souzafcharles.api.model.dto.ProductResponseDTO;
-import com.github.souzafcharles.api.model.entity.Product;
-import com.github.souzafcharles.api.repository.ProductRepository;
+import com.github.souzafcharles.api.Product.model.dto.ProductRequestDTO;
+import com.github.souzafcharles.api.Product.model.dto.ProductResponseDTO;
+import com.github.souzafcharles.api.Product.model.entity.Product;
+import com.github.souzafcharles.api.Product.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,14 +27,18 @@ public class ProductService {
         this.fakeStoreClient = fakeStoreClient;
     }
 
-    public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll()
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
+        List<ProductResponseDTO> allProducts = productRepository.findAll()
                 .stream()
                 .map(ProductResponseDTO::new)
                 .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allProducts.size());
+        return new PageImpl<>(allProducts.subList(start, end), pageable, allProducts.size());
     }
 
-    public ProductResponseDTO getProductById(Long id) {
+    public ProductResponseDTO getProductById(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
         return new ProductResponseDTO(product);
@@ -45,11 +51,10 @@ public class ProductService {
         product.setDescription(dto.description());
         product.setCategory(dto.category());
         product.setImage(dto.image());
-        Product saved = productRepository.save(product);
-        return new ProductResponseDTO(saved);
+        return new ProductResponseDTO(productRepository.save(product));
     }
 
-    public ProductResponseDTO updateProduct(Long id, ProductRequestDTO dto) {
+    public ProductResponseDTO updateProduct(String id, ProductRequestDTO dto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
         product.setTitle(dto.title());
@@ -60,12 +65,20 @@ public class ProductService {
         return new ProductResponseDTO(productRepository.save(product));
     }
 
-    public void deleteProduct(Long id) {
+    public void deleteProduct(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
         productRepository.delete(product);
     }
 
+    public List<ProductResponseDTO> searchProducts(String keyword) {
+        Set<Product> results = new HashSet<>();
+        results.addAll(productRepository.findByTitleContainingIgnoreCase(keyword));
+        results.addAll(productRepository.findByDescriptionContainingIgnoreCase(keyword));
+        return results.stream()
+                .map(ProductResponseDTO::new)
+                .toList();
+    }
 
     public List<ProductResponseDTO> getTopExpensiveProducts(int topN) {
         return productRepository.findAllByOrderByPriceDesc().stream()
@@ -94,26 +107,4 @@ public class ProductService {
                 .map(ProductResponseDTO::new)
                 .toList();
     }
-
-    public List<ProductResponseDTO> searchProducts(String keyword) {
-        Set<Product> results = new HashSet<>();
-        results.addAll(productRepository.findByTitleContainingIgnoreCase(keyword));
-        results.addAll(productRepository.findByDescriptionContainingIgnoreCase(keyword));
-        return results.stream()
-                .map(ProductResponseDTO::new)
-                .toList();
-    }
-
-    public Map<Long, Long> getProductPopularity() {
-        Flux<CartProductDTO> productsInCartsFlux = fakeStoreClient.getAllCarts()
-                .flatMapMany(Flux::fromArray)
-                .flatMap(cart -> Flux.fromIterable(cart.products())); // note aqui
-
-        return productsInCartsFlux
-                .groupBy(CartProductDTO::id)
-                .flatMap(group -> group.count().map(count -> Map.entry(group.key(), count)))
-                .collectMap(Map.Entry::getKey, Map.Entry::getValue)
-                .block();
-    }
-
 }

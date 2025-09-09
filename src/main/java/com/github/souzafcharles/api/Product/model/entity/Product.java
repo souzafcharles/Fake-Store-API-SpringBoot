@@ -1,16 +1,15 @@
-package com.github.souzafcharles.api.model.entity;
+package com.github.souzafcharles.api.Product.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "tb_product")
 public class Product {
 
     @Id
-    private Long id;
+    private String id;
 
     @Column(nullable = false)
     private String title;
@@ -28,11 +27,18 @@ public class Product {
 
     public Product() {}
 
-    public Long getId() {
+    @PrePersist
+    public void generateIdIfNull() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

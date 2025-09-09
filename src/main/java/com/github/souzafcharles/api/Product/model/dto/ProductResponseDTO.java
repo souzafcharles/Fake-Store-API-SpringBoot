@@ -1,10 +1,10 @@
-package com.github.souzafcharles.api.model.dto;
+package com.github.souzafcharles.api.Product.model.dto;
 
-import com.github.souzafcharles.api.model.entity.Product;
+import com.github.souzafcharles.api.Product.model.entity.Product;
 import java.io.Serializable;
 
 public record ProductResponseDTO(
-        Long id,
+        String id,
         String title,
         Double price,
         String description,
