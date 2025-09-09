@@ -5,12 +5,12 @@ import com.github.souzafcharles.api.Product.model.dto.ProductRequestDTO;
 import com.github.souzafcharles.api.Product.model.dto.ProductResponseDTO;
 import com.github.souzafcharles.api.Product.model.entity.Product;
 import com.github.souzafcharles.api.Product.repository.ProductRepository;
+import com.github.souzafcharles.api.exceptions.custom.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,11 +20,9 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final FakeStoreClient fakeStoreClient;
 
     public ProductService(ProductRepository productRepository, FakeStoreClient fakeStoreClient) {
         this.productRepository = productRepository;
-        this.fakeStoreClient = fakeStoreClient;
     }
 
     public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
@@ -40,7 +38,7 @@ public class ProductService {
 
     public ProductResponseDTO getProductById(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         return new ProductResponseDTO(product);
     }
 
@@ -56,7 +54,7 @@ public class ProductService {
 
     public ProductResponseDTO updateProduct(String id, ProductRequestDTO dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         product.setTitle(dto.title());
         product.setPrice(dto.price());
         product.setDescription(dto.description());
@@ -67,7 +65,7 @@ public class ProductService {
 
     public void deleteProduct(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         productRepository.delete(product);
     }
 

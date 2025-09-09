@@ -20,11 +20,4 @@ public class FakeStoreClient {
                 .retrieve()
                 .bodyToMono(ProductResponseDTO[].class);
     }
-
-    public Mono<ProductResponseDTO> getProductById(Long id) {
-        return webClient.get()
-                .uri("https://fakestoreapi.com/products/{id}", id)
-                .retrieve()
-                .bodyToMono(ProductResponseDTO.class);
-    }
 }

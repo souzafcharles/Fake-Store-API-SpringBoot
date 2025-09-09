@@ -26,28 +26,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
-    public ResponseEntity<ProductResponseDTO> create(@RequestBody @Valid ProductRequestDTO dto) {
-        ProductResponseDTO created = productService.createProduct(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getById(@PathVariable String id) {
-        return ResponseEntity.ok(productService.getProductById(id));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> update(@PathVariable String id, @RequestBody @Valid ProductRequestDTO dto) {
-        return ResponseEntity.ok(productService.updateProduct(id, dto));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ProductResponseDTO>>> getAll(
             Pageable pageable,
@@ -62,6 +40,28 @@ public class ProductController {
                 )
         );
         return page.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(model);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> getById(@PathVariable String id) {
+        return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<ProductResponseDTO> create(@RequestBody @Valid ProductRequestDTO dto) {
+        ProductResponseDTO created = productService.createProduct(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> update(@PathVariable String id, @RequestBody @Valid ProductRequestDTO dto) {
+        return ResponseEntity.ok(productService.updateProduct(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
