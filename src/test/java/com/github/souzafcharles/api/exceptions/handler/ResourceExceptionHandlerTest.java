@@ -27,7 +27,7 @@ class ResourceExceptionHandlerTest {
     }
 
     @Test
-    void handleNotFound_ShouldReturnStandardErrorWithNotFoundStatus() {
+    void handleNotFoundShouldReturnStandardErrorWithNotFoundStatus() {
 
         when(request.getRequestURI()).thenReturn("/products/99");
         ResourceNotFoundException exception = new ResourceNotFoundException("99");

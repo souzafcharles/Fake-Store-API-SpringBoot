@@ -1,6 +1,6 @@
 package com.github.souzafcharles.api.client;
 
-import com.github.souzafcharles.api.Product.model.dto.ProductResponseDTO;
+import com.github.souzafcharles.api.product.model.dto.ProductResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,7 +21,7 @@ class FakeStoreClientTest {
     }
 
     @Test
-    void getAllProducts_ShouldReturnProducts() {
+    void getAllProductsShouldReturnProducts() {
         ProductResponseDTO[] mockProducts = {
                 new ProductResponseDTO("1", "Laptop", 1500.0, "Gaming", "Electronics", null)
         };
