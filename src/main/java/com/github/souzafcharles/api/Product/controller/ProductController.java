@@ -27,19 +27,13 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<ProductResponseDTO>>> getAll(
-            Pageable pageable,
-            PagedResourcesAssembler<ProductResponseDTO> assembler
-    ) {
+    public ResponseEntity<PagedModel<EntityModel<ProductResponseDTO>>> getAll(Pageable pageable, PagedResourcesAssembler<ProductResponseDTO> assembler) {
         var page = productService.getAllProducts(pageable);
         var model = assembler.toModel(page, product ->
-                EntityModel.of(product,
-                        WebMvcLinkBuilder.linkTo(
-                                WebMvcLinkBuilder.methodOn(ProductController.class).getById(product.id())
-                        ).withSelfRel()
-                )
-        );
-        return page.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(model);
+                EntityModel.of(product, WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProductController.class).getById(product.id())).withSelfRel()));
+        return page.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(model);
     }
 
     @GetMapping("/{id}")
@@ -54,7 +48,10 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> update(@PathVariable String id, @RequestBody @Valid ProductRequestDTO dto) {
+    public ResponseEntity<ProductResponseDTO> update(
+            @PathVariable String id,
+            @RequestBody @Valid ProductRequestDTO dto
+    ) {
         return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
@@ -70,12 +67,16 @@ public class ProductController {
     }
 
     @GetMapping("/top-expensive")
-    public ResponseEntity<List<ProductResponseDTO>> topExpensive(@RequestParam(defaultValue = "5") int topN) {
+    public ResponseEntity<List<ProductResponseDTO>> topExpensive(
+            @RequestParam(defaultValue = "5") int topN
+    ) {
         return ResponseEntity.ok(productService.getTopExpensiveProducts(topN));
     }
 
     @GetMapping("/top-cheapest")
-    public ResponseEntity<List<ProductResponseDTO>> topCheapest(@RequestParam(defaultValue = "5") int topN) {
+    public ResponseEntity<List<ProductResponseDTO>> topCheapest(
+            @RequestParam(defaultValue = "5") int topN
+    ) {
         return ResponseEntity.ok(productService.getTopCheapestProducts(topN));
     }
 
