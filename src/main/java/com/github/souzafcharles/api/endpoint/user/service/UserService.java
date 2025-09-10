@@ -39,7 +39,7 @@ public class UserService {
 
     public UserResponseDTO getUserById(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", id)));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(id));
         return new UserResponseDTO(user);
     }
 
@@ -61,7 +61,7 @@ public class UserService {
 
     public UserResponseDTO updateUser(String id, UserRequestDTO dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", id)));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(id));
 
         if (dto.email() != null) {
             userRepository.findByEmail(dto.email())
@@ -82,7 +82,7 @@ public class UserService {
 
     public void deleteUser(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", id)));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(id));
         try {
             userRepository.delete(user);
         } catch (DataIntegrityViolationException e) {
@@ -93,13 +93,13 @@ public class UserService {
     public UserResponseDTO getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(UserResponseDTO::new)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", username)));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(username));
     }
 
     public UserResponseDTO getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(UserResponseDTO::new)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", email)));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(email));
     }
 
     public List<UserResponseDTO> searchUsersByUsername(String keyword) {

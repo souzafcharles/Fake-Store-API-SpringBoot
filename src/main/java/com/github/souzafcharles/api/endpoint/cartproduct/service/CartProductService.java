@@ -10,7 +10,6 @@ import com.github.souzafcharles.api.endpoint.cartproduct.model.entity.CartProduc
 import com.github.souzafcharles.api.endpoint.product.model.entity.Product;
 import com.github.souzafcharles.api.endpoint.product.repository.ProductRepository;
 import com.github.souzafcharles.api.exceptions.custom.ResourceNotFoundException;
-import com.github.souzafcharles.api.utils.Messages;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +30,10 @@ public class CartProductService {
 
     public CartProductResponseDTO addProductToCart(String cartId, CartProductRequestDTO dto) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.CART_NOT_FOUND.replace("{}", cartId)));
+                .orElseThrow(() -> ResourceNotFoundException.forCart(cartId));
 
         Product product = productRepository.findById(dto.productId())
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.PRODUCT_NOT_FOUND.replace("{}", dto.productId())));
+                .orElseThrow(() -> ResourceNotFoundException.forProduct(dto.productId()));
 
         CartProduct cartProduct = new CartProduct();
         cartProduct.setId(new CartProductId());
@@ -48,14 +47,14 @@ public class CartProductService {
         return new CartProductResponseDTO(cartProduct);
     }
 
-    public void removeProductFromCart(String cartId, String productId) {
+    public void deleteProductFromCart(String cartId, String productId) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.CART_NOT_FOUND.replace("{}", cartId)));
+                .orElseThrow(() -> ResourceNotFoundException.forCart(cartId));
 
         boolean removed = cart.getCartProducts().removeIf(cp -> cp.getProduct().getId().equals(productId));
 
         if (!removed) {
-            throw new ResourceNotFoundException(Messages.PRODUCT_NOT_FOUND.replace("{}", productId));
+            throw ResourceNotFoundException.forProduct(productId);
         }
 
         cartRepository.save(cart);
@@ -63,7 +62,7 @@ public class CartProductService {
 
     public List<CartProductResponseDTO> getProductsInCart(String cartId) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.CART_NOT_FOUND.replace("{}", cartId)));
+                .orElseThrow(() -> ResourceNotFoundException.forCart(cartId));
 
         return cart.getCartProducts().stream()
                 .map(CartProductResponseDTO::new)
@@ -90,7 +89,6 @@ public class CartProductService {
                 .filter(Objects::nonNull)
                 .toList();
     }
-
 
     public Map<String, Double> getRevenuePerProduct() {
         Map<String, Double> revenueMap = new HashMap<>();

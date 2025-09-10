@@ -38,7 +38,7 @@ public class ProductService {
 
     public ProductResponseDTO getProductById(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> ResourceNotFoundException.forProduct(id));
         return new ProductResponseDTO(product);
     }
 
@@ -54,7 +54,7 @@ public class ProductService {
 
     public ProductResponseDTO updateProduct(String id, ProductRequestDTO dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> ResourceNotFoundException.forProduct(id));
         product.setTitle(dto.title());
         product.setPrice(dto.price());
         product.setDescription(dto.description());
@@ -65,7 +65,7 @@ public class ProductService {
 
     public void deleteProduct(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> ResourceNotFoundException.forProduct(id));
         productRepository.delete(product);
     }
 

@@ -1,7 +1,9 @@
 package com.github.souzafcharles.api.exceptions.custom;
 
+import com.github.souzafcharles.api.utils.Messages;
+
 public class DatabaseException extends RuntimeException {
     public DatabaseException(String message) {
-        super("Database error detected: " + message + ". Please verify database constraints and configurations");
+        super(String.format(Messages.EXCEPTION_DATABASE, message));
     }
 }

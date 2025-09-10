@@ -9,7 +9,6 @@ import com.github.souzafcharles.api.endpoint.product.repository.ProductRepositor
 import com.github.souzafcharles.api.endpoint.user.repository.UserRepository;
 import com.github.souzafcharles.api.exceptions.custom.DatabaseException;
 import com.github.souzafcharles.api.exceptions.custom.ResourceNotFoundException;
-import com.github.souzafcharles.api.utils.Messages;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,7 +26,9 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public CartService(CartRepository cartRepository, UserRepository userRepository, ProductRepository productRepository) {
+    public CartService(CartRepository cartRepository,
+                       UserRepository userRepository,
+                       ProductRepository productRepository) {
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
@@ -45,17 +46,16 @@ public class CartService {
 
     public CartResponseDTO getCartById(String id) {
         Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.CART_NOT_FOUND.replace("{}", id)));
+                .orElseThrow(() -> ResourceNotFoundException.forCart(id));
         return new CartResponseDTO(cart);
     }
 
     public CartResponseDTO createCart(CartRequestDTO dto) {
         var user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", dto.userId())));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(dto.userId()));
 
         Cart cart = new Cart();
         cart.setUser(user);
-
         cart.setCartProducts(buildCartProducts(cart, dto));
 
         return new CartResponseDTO(cartRepository.save(cart));
@@ -63,10 +63,10 @@ public class CartService {
 
     public CartResponseDTO updateCart(String id, CartRequestDTO dto) {
         Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.CART_NOT_FOUND.replace("{}", id)));
+                .orElseThrow(() -> ResourceNotFoundException.forCart(id));
 
         var user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.USER_NOT_FOUND.replace("{}", dto.userId())));
+                .orElseThrow(() -> ResourceNotFoundException.forUser(dto.userId()));
 
         cart.setUser(user);
         cart.setCartProducts(buildCartProducts(cart, dto));
@@ -84,13 +84,13 @@ public class CartService {
                             cp.setQuantity(p.quantity());
                             return cp;
                         })
-                        .orElseThrow(() -> new ResourceNotFoundException(Messages.PRODUCT_NOT_FOUND.replace("{}", p.productId())))
+                        .orElseThrow(() -> ResourceNotFoundException.forProduct(p.productId()))
                 ).toList();
     }
 
     public void deleteCart(String id) {
         Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Messages.CART_NOT_FOUND.replace("{}", id)));
+                .orElseThrow(() -> ResourceNotFoundException.forCart(id));
         try {
             cartRepository.delete(cart);
         } catch (DataIntegrityViolationException e) {

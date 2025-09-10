@@ -4,6 +4,9 @@ import com.github.souzafcharles.api.endpoint.cartproduct.model.dto.CartProductRe
 import com.github.souzafcharles.api.endpoint.cartproduct.model.dto.CartProductResponseDTO;
 import com.github.souzafcharles.api.endpoint.cartproduct.model.dto.ProductSalesDTO;
 import com.github.souzafcharles.api.endpoint.cartproduct.service.CartProductService;
+import com.github.souzafcharles.api.utils.Messages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/cart-products")
+@Tag(name = "Cart Product API", description = Messages.CART_PRODUCT_TAG_DESCRIPTION)
 public class CartProductController {
 
     private final CartProductService cartProductService;
@@ -23,6 +27,7 @@ public class CartProductController {
     }
 
     @PostMapping("/{cartId}")
+    @Operation(summary = Messages.CART_PRODUCT_ADD_SUMMARY, description = Messages.CART_PRODUCT_ADD_DESCRIPTION)
     public ResponseEntity<CartProductResponseDTO> addProductToCart(
             @PathVariable String cartId,
             @RequestBody @Valid CartProductRequestDTO dto
@@ -32,20 +37,23 @@ public class CartProductController {
     }
 
     @DeleteMapping("/{cartId}/{productId}")
-    public ResponseEntity<Void> removeProductFromCart(
+    @Operation(summary = Messages.CART_PRODUCT_REMOVE_SUMMARY, description = Messages.CART_PRODUCT_REMOVE_DESCRIPTION)
+    public ResponseEntity<Void> deleteProductFromCart(
             @PathVariable String cartId,
             @PathVariable String productId
     ) {
-        cartProductService.removeProductFromCart(cartId, productId);
+        cartProductService.deleteProductFromCart(cartId, productId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{cartId}")
+    @Operation(summary = Messages.CART_PRODUCT_LIST_SUMMARY, description = Messages.CART_PRODUCT_LIST_DESCRIPTION)
     public ResponseEntity<List<CartProductResponseDTO>> getProductsInCart(@PathVariable String cartId) {
         return ResponseEntity.ok(cartProductService.getProductsInCart(cartId));
     }
 
     @GetMapping("/analytics/most-sold")
+    @Operation(summary = Messages.CART_PRODUCT_MOST_SOLD_SUMMARY, description = Messages.CART_PRODUCT_MOST_SOLD_DESCRIPTION)
     public ResponseEntity<List<ProductSalesDTO>> getMostSoldProducts(
             @RequestParam(defaultValue = "5") int topN
     ) {
@@ -53,16 +61,19 @@ public class CartProductController {
     }
 
     @GetMapping("/analytics/revenue")
+    @Operation(summary = Messages.CART_PRODUCT_REVENUE_SUMMARY, description = Messages.CART_PRODUCT_REVENUE_DESCRIPTION)
     public ResponseEntity<Map<String, Double>> getRevenuePerProduct() {
         return ResponseEntity.ok(cartProductService.getRevenuePerProduct());
     }
 
     @GetMapping("/analytics/total-items")
+    @Operation(summary = Messages.CART_PRODUCT_TOTAL_ITEMS_SUMMARY, description = Messages.CART_PRODUCT_TOTAL_ITEMS_DESCRIPTION)
     public ResponseEntity<Long> getTotalItemsInCarts() {
         return ResponseEntity.ok(cartProductService.getTotalItemsInCarts());
     }
 
     @GetMapping("/analytics/carts-by-product/{productId}")
+    @Operation(summary = Messages.CART_PRODUCT_CARTS_BY_PRODUCT_SUMMARY, description = Messages.CART_PRODUCT_CARTS_BY_PRODUCT_DESCRIPTION)
     public ResponseEntity<List<String>> getCartsContainingProduct(@PathVariable String productId) {
         return ResponseEntity.ok(cartProductService.getCartsContainingProduct(productId));
     }
