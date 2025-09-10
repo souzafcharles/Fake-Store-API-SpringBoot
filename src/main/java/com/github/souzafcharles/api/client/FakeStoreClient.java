@@ -1,8 +1,8 @@
 package com.github.souzafcharles.api.client;
 
-import com.github.souzafcharles.api.cart.model.dto.CartResponseDTO;
-import com.github.souzafcharles.api.product.model.dto.ProductResponseDTO;
-import com.github.souzafcharles.api.user.model.dto.UserResponseDTO;
+import com.github.souzafcharles.api.endpoint.cart.model.dto.CartResponseDTO;
+import com.github.souzafcharles.api.endpoint.product.model.dto.ProductResponseDTO;
+import com.github.souzafcharles.api.endpoint.user.model.dto.UserResponseDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;

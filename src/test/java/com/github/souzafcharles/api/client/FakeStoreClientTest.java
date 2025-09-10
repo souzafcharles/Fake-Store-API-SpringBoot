@@ -1,6 +1,6 @@
 package com.github.souzafcharles.api.client;
 
-import com.github.souzafcharles.api.product.model.dto.ProductResponseDTO;
+import com.github.souzafcharles.api.endpoint.product.model.dto.ProductResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
