@@ -35,13 +35,23 @@ public class CartProductService {
         Product product = productRepository.findById(dto.productId())
                 .orElseThrow(() -> ResourceNotFoundException.forProduct(dto.productId()));
 
-        CartProduct cartProduct = new CartProduct();
-        cartProduct.setId(new CartProductId());
-        cartProduct.setCart(cart);
-        cartProduct.setProduct(product);
-        cartProduct.setQuantity(dto.quantity());
+        Optional<CartProduct> existing = cart.getCartProducts().stream()
+                .filter(cp -> cp.getProduct().getId().equals(product.getId()))
+                .findFirst();
 
-        cart.getCartProducts().add(cartProduct);
+        CartProduct cartProduct;
+        if (existing.isPresent()) {
+            cartProduct = existing.get();
+            cartProduct.setQuantity(cartProduct.getQuantity() + dto.quantity());
+        } else {
+            cartProduct = new CartProduct();
+            cartProduct.setId(new CartProductId());
+            cartProduct.setCart(cart);
+            cartProduct.setProduct(product);
+            cartProduct.setQuantity(dto.quantity());
+            cart.getCartProducts().add(cartProduct);
+        }
+
         cartRepository.save(cart);
 
         return new CartProductResponseDTO(cartProduct);

@@ -9,7 +9,6 @@ public class CartProductId implements Serializable {
     private String cartId;
     private String productId;
 
-    // Getters e setters
     public String getCartId() {
         return cartId;
     }
